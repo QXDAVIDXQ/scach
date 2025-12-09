@@ -2,86 +2,65 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>♟️ Schach Pro – Premium</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>♟️ Schach Pro – Klar & Schön</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     :root {
-      --bg: #0f0f1b;
-      --card: #1a1a2e;
-      --accent: #00c9ff;
-      --primary: #ff2e63;
-      --text: #e2e2f0;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --text: #2d3748;
+      --border: #e2e8f0;
+      --primary: #4f46e5;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
       --board-light: #f0d9b5;
       --board-dark: #b58863;
-      --success: #00f5d4;
-      --warning: #ff9e00;
-      --danger: #ff2e63;
-      --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.4, 1);
     }
-    [data-theme="light"] {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --board-light: #fff9e6;
-      --board-dark: #d2b48c;
+    [data-theme="dark"] {
+      --bg: #1a202c;
+      --card: #2d3748;
+      --text: #e2e8f0;
+      --border: #4a5568;
+      --board-light: #c9b48c;
+      --board-dark: #7c5f3f;
     }
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      padding: 1rem;
     }
-    .app-layout {
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 280px 300px;
-      height: 100%;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
     }
-    @media (max-width: 1200px) {
-      .app-layout { grid-template-columns: 1fr 260px; }
-      .character-panel { display: none !important; }
-    }
-    @media (max-width: 900px) {
-      .app-layout { grid-template-columns: 1fr; }
-      .sidebar { display: none !important; }
+    @media (max-width: 1000px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
     }
     header {
-      padding: 1rem 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+    }
+    .main-content {
       background: var(--card);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .logo { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
-    .logo i { color: var(--primary); }
-    .controls { display: flex; gap: 0.8rem; }
-    .btn {
-      background: var(--accent);
-      color: #0f0f1b;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: var(--transition);
-    }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,201,255,0.3); }
-    .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
     .board-container {
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 1.5rem;
-      background: radial-gradient(circle, var(--bg) 0%, #0a0a15 100%);
+      margin: 1rem 0;
     }
     #board {
       display: grid;
@@ -89,385 +68,279 @@
       width: 100%;
       max-width: 600px;
       aspect-ratio: 1/1;
-      border: 2px solid #444;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 3px solid #555;
       border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
     .square {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 2.8rem;
       cursor: pointer;
-      transition: var(--transition);
+      position: relative;
     }
     .white { background: var(--board-light); }
     .black { background: var(--board-dark); }
-    .square.selected { box-shadow: inset 0 0 0 4px var(--success); }
-    .square.valid-move::after,
-    .square.valid-capture::after {
-      content: '';
+    .square.selected {
+      box-shadow: inset 0 0 0 4px var(--success);
+    }
+    .square.valid-move::after {
+      content: '⦁';
+      color: rgba(16, 185, 129, 0.6);
+      font-size: 2rem;
       position: absolute;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: rgba(0, 245, 212, 0.4);
     }
     .square.valid-capture::after {
-      background: rgba(255, 46, 99, 0.4);
-      box-shadow: inset 0 0 0 2px white;
+      content: '⦁';
+      color: rgba(239, 68, 68, 0.7);
+      font-size: 2rem;
+      position: absolute;
     }
-    .piece {
-      width: 85%;
-      height: 85%;
-      pointer-events: none;
-      transition: transform 0.2s;
+    .last-move {
+      box-shadow: inset 0 0 0 3px var(--warning);
     }
-    .piece.dragging { transform: scale(1.2); z-index: 10; }
-    .last-move { box-shadow: inset 0 0 0 3px var(--warning); }
     .sidebar {
-      background: var(--card);
-      padding: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      overflow-y: auto;
     }
     .panel {
-      background: rgba(255,255,255,0.03);
-      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 1.2rem;
-      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .panel h3 {
       font-size: 1.2rem;
       margin-bottom: 1rem;
+      color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      color: var(--accent);
+      gap: 0.5rem;
     }
-    .capture-list {
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0.3rem 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    .material-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.5rem;
+      gap: 0.3rem;
+      margin: 0.5rem 0;
     }
-    .captured-piece {
+    .material-piece {
       width: 28px;
       height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.05);
       border-radius: 4px;
       font-size: 0.9rem;
     }
-    .material-balance {
-      font-size: 1.3rem;
+    .material-missing {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+    .balance {
       font-weight: 700;
       text-align: center;
-      margin: 0.8rem 0;
       padding: 0.6rem;
-      background: rgba(0, 245, 212, 0.1);
-      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 6px;
+      margin: 0.6rem 0;
     }
-    .material-balance.positive { color: var(--success); }
-    .material-balance.negative { color: var(--danger); }
-    .eval-bar {
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      margin: 0.8rem 0;
-      overflow: hidden;
+    .balance.pos { color: var(--success); }
+    .balance.neg { color: var(--danger); }
+    .game-list {
+      max-height: 200px;
+      overflow-y: auto;
     }
-    #evalIndicator {
-      height: 100%;
-      background: linear-gradient(90deg, var(--danger), var(--warning), #64748b, var(--success), var(--accent));
-      border-radius: 4px;
-      transition: width 0.5s ease;
+    .game-item {
+      padding: 0.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
     }
-    .suggestion-box {
-      background: rgba(255, 46, 99, 0.1);
+    .game-item:last-child { border: none; }
+    .character-bubble {
+      background: rgba(79, 70, 229, 0.08);
       border-left: 3px solid var(--primary);
       padding: 0.8rem;
       border-radius: 0 6px 6px 0;
-      font-size: 0.95rem;
-      margin-top: 0.8rem;
-    }
-    .character-panel {
-      background: var(--card);
-      display: flex;
-      flex-direction: column;
-      padding: 1.2rem;
-      border-left: 1px solid rgba(255,255,255,0.1);
-    }
-    .character {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .character-avatar {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 1rem;
-      background: linear-gradient(135deg, var(--accent), var(--primary));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .character-name {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-    }
-    .character-title {
-      opacity: 0.7;
-      font-size: 0.9rem;
-    }
-    .speech-bubble {
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-top: 0.8rem;
-      position: relative;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-style: italic;
-    }
-    .speech-bubble::before {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 20px;
-      border-width: 10px 10px 0;
-      border-style: solid;
-      border-color: rgba(255,255,255,0.1) transparent;
-    }
-    .character-actions {
+      min-height: 60px;
       display: flex;
-      gap: 0.6rem;
-      margin-top: auto;
-    }
-    .toggle {
-      display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
-      font-size: 0.9rem;
     }
-    .toggle input {
-      width: 36px;
-      height: 20px;
-      accent-color: var(--accent);
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    .character-avatar {
-      animation: float 6s ease-in-out infinite;
-    }
-    .status-bar {
-      padding: 0.8rem 1.5rem;
-      background: var(--card);
+    .controls {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .status {
       font-weight: 600;
-      font-size: 1.1rem;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      text-align: center;
+      padding: 0.8rem;
+      background: var(--card);
+      border-radius: 8px;
+      margin-top: 1rem;
     }
   </style>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
   <header>
-    <div class="logo">
-      <i class="fas fa-chess-knight"></i> Schach<sup>Pro</sup>
-    </div>
-    <div class="controls">
-      <button id="newGameBtn" class="btn"><i class="fas fa-plus"></i> Neu</button>
-      <button id="saveBtn" class="btn"><i class="fas fa-save"></i> Speichern</button>
-      <button id="themeToggle" class="btn btn-outline">
-        <i class="fas fa-moon"></i>
-      </button>
-    </div>
+    <h1>♟️ Schach Pro</h1>
+    <p>Klar. Schön. Mächtig.</p>
   </header>
 
-  <div class="app-layout">
-    <div class="board-container">
-      <div id="board"></div>
+  <div class="app">
+    <div class="main-content">
+      <div class="board-container">
+        <div id="board"></div>
+      </div>
+      <div class="controls">
+        <button id="newGameBtn" class="btn">➕ Neues Spiel</button>
+        <button id="loadFENBtn" class="btn">🎯 FEN-Stellung laden</button>
+        <button id="undoBtn" class="btn">↩️ Zug zurück</button>
+        <button id="toggleTheme" class="btn btn-outline">🌓 Design</button>
+      </div>
+      <div class="status" id="status">Weiß ist am Zug.</div>
     </div>
 
     <div class="sidebar">
+      <!-- Spieler & Material -->
       <div class="panel">
-        <h3><i class="fas fa-users"></i> Spieler</h3>
+        <h3>👥 Spieler</h3>
         <div><strong>Weiß:</strong> <span id="playerWhite">Anonym</span></div>
-        <div class="capture-list" id="whiteCaptures"></div>
         <div><strong>Schwarz:</strong> <span id="playerBlack">Anonym</span></div>
-        <div class="capture-list" id="blackCaptures"></div>
-        <div class="material-balance" id="materialBalance">±0.00</div>
+        <button id="setNamesBtn" class="btn btn-outline" style="margin-top:0.5rem;">✏️ Namen ändern</button>
+        
+        <h3 style="margin-top:1.2rem;">📊 Material</h3>
+        <div><strong>Weiß hat:</strong></div>
+        <div class="material-list" id="whiteHas"></div>
+        <div><strong>Weiß fehlt:</strong></div>
+        <div class="material-list" id="whiteMissing"></div>
+        
+        <div style="margin-top:1rem;"><strong>Schwarz hat:</strong></div>
+        <div class="material-list" id="blackHas"></div>
+        <div><strong>Schwarz fehlt:</strong></div>
+        <div class="material-list" id="blackMissing"></div>
+        
+        <div class="balance" id="balance">±0.0</div>
       </div>
 
+      <!-- Spiele verwalten -->
       <div class="panel">
-        <h3><i class="fas fa-brain"></i> Analyse</h3>
-        <div class="eval-bar">
-          <div id="evalIndicator" style="width:50%;"></div>
-        </div>
-        <div id="evaluation">Ausgeglichen</div>
-        <div class="suggestion-box" id="suggestion">
-          💡 Zentrumskontrolle ist der Schlüssel.
+        <h3>💾 Meine Spiele</h3>
+        <div class="game-list" id="gameList">
+          <div class="game-item">Keine Spiele gespeichert.</div>
         </div>
       </div>
 
+      <!-- Charakter -->
       <div class="panel">
-        <h3><i class="fas fa-save"></i> Gespeicherte Spiele</h3>
-        <div id="gameList">Keine Spiele.</div>
-      </div>
-    </div>
-
-    <div class="character-panel">
-      <div class="character">
-        <div class="character-avatar">🧙</div>
-        <div class="character-name" id="characterName">Meister Vex</div>
-        <div class="character-title">Schach-Beobachter</div>
-        <div class="speech-bubble" id="speechBubble">
-          Willkommen, Spieler. Zeig mir, was du drauf hast.
+        <h3>🧙 Meister Vex</h3>
+        <div class="character-bubble" id="speechBubble">
+          Gib den Spielern Namen – dann zeige ich Persönlichkeit!
         </div>
-      </div>
-      <div class="character-actions">
-        <label class="toggle">
-          <input type="checkbox" id="toggleAnimations" checked>
-          Animationen
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="toggleComments" checked>
-          Kommentare
-        </label>
+        <div style="margin-top:0.8rem;">
+          <label style="display:block; margin:0.4rem 0;">
+            <input type="checkbox" id="toggleComments" checked> 
+            Kommentare anzeigen
+          </label>
+          <label style="display:block;">
+            <input type="checkbox" id="toggleAnimations" checked> 
+            Animationen (leicht)
+          </label>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="status-bar">
-    <span id="status">Weiß ist am Zug.</span>
-    <span id="moveCount">Zug 1</span>
-  </div>
-
-  <div id="nameModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:var(--card); padding:2rem; border-radius:16px; width:90%; max-width:500px;">
-      <h2>Spieler-Namen festlegen</h2>
-      <div style="margin:1.5rem 0;">
+  <!-- Name Modal -->
+  <div id="nameModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; max-width:400px; width:90%;">
+      <h3>Spieler-Namen</h3>
+      <div style="margin:1rem 0;">
         <label>Weiß:</label>
-        <input type="text" id="nameWhite" value="Anonym" style="width:100%; padding:0.6rem; margin:0.4rem 0; border-radius:6px; border:1px solid #555; background:rgba(255,255,255,0.05); color:var(--text);">
+        <input id="nameW" type="text" value="Anonym" style="width:100%; padding:0.6rem; margin-top:0.3rem; border:1px solid #ccc; border-radius:4px;">
       </div>
-      <div style="margin:1.5rem 0;">
+      <div style="margin:1rem 0;">
         <label>Schwarz:</label>
-        <input type="text" id="nameBlack" value="Anonym" style="width:100%; padding:0.6rem; margin:0.4rem 0; border-radius:6px; border:1px solid #555; background:rgba(255,255,255,0.05); color:var(--text);">
+        <input id="nameB" type="text" value="Anonym" style="width:100%; padding:0.6rem; margin-top:0.3rem; border:1px solid #ccc; border-radius:4px;">
       </div>
-      <div style="display:flex; gap:0.8rem; margin-top:1rem;">
-        <button id="applyNames" class="btn"><i class="fas fa-check"></i> Übernehmen</button>
+      <div style="display:flex; gap:0.6rem; margin-top:1rem;">
+        <button id="applyNames" class="btn">✅ Übernehmen</button>
         <button id="cancelNames" class="btn btn-outline">Abbrechen</button>
       </div>
     </div>
   </div>
 
+  <!-- FEN Modal -->
+  <div id="fenModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; max-width:500px; width:90%;">
+      <h3>Eigene Stellung laden</h3>
+      <p>z. B.: <code>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</code></p>
+      <textarea id="fenInput" rows="3" style="width:100%; padding:0.6rem; margin:0.8rem 0; border:1px solid #ccc; border-radius:4px; font-family:monospace;">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</textarea>
+      <div style="display:flex; gap:0.6rem;">
+        <button id="applyFEN" class="btn">✅ Laden</button>
+        <button id="cancelFEN" class="btn btn-outline">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // 💬 Charakter-Sprüche (provokant, aber nie hilfreich – nur Unterhaltung)
-    const COMMENTS = {
-      opening: [
-        "Ah, die gute alte e4... Tradition oder Langeweile?",
-        "Schon wieder Italienisch? Wo bleibt die Kreativität?",
-        "Bauern vor Entwicklung? Mutig. Oder töricht.",
-        "Rochade früh – klug. Oder hast du nur Angst?",
-        "Zentrum geöffnet? Bereit für Chaos, hoffe ich."
-      ],
-      middlegame: [
-        "Hmm… eine ungedeckte Dame. Interessant.",
-        "Dein Springer tanzt einsam am Rand. Langweilig?",
-        "Turm auf offener Linie – endlich mal was Sinnvolles!",
-        "Doppelter Bauern… ein Geschenk? Oder Falle?",
-        "Königsstellung luftig… ich wittere Gefahr."
-      ],
-      endgame: [
-        "Nur noch Damen und Könige? Zeit für Präzision!",
-        "Bauer auf der 7. – ein Herzschlag vor der Umwandlung.",
-        "Opposition genommen? Beeindruckend… für Anfänger.",
-        "Remis durch Stellungswiederholung? Langweilig!",
-        "Matt in 3 Zügen… wenn du es nur sähest."
-      ],
-      afterMove: [
-        "Mutig.",
-        "Riskant.",
-        "Überraschend.",
-        "Konventionell.",
-        "Ich hab Schlimmeres gesehen… kaum.",
-        "Fast elegant.",
-        "Das war… eine Entscheidung.",
-        "Interessant. Wirklich."
-      ]
+    // ========== DATEN ==========
+    const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const PIECES = {
+      'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+      'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
     };
+    const PIECE_NAMES = {
+      'K': 'König', 'Q': 'Dame', 'R': 'Turm', 'B': 'Läufer', 'N': 'Springer', 'P': 'Bauer',
+      'k': 'König', 'q': 'Dame', 'r': 'Turm', 'b': 'Läufer', 'n': 'Springer', 'p': 'Bauer'
+    };
+    const VALUES = { 'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 0 };
 
-    // 🧠 Analyse-Hinweise (taktisch, aber nicht lösungspreisgebend)
-    const SUGGESTIONS = [
-      "Achte auf gefesselte Figuren – sie können nicht ziehen!",
-      "Ein ungedeckter Springer ist oft ein Ziel.",
-      "Öffne Linien für deine Türme – sie lieben Freiheit.",
-      "Zwei Läufer im offenen Spiel? Starkes Duo.",
-      "Bauernstruktur bestimmt langfristige Stärken.",
-      "Zentrumskontrolle gibt Raum – Raum gibt Initiative.",
-      "Königsstellung vor dem Mittelspiel sichern!",
-      "Opfere niemals ohne klaren Plan dahinter."
-    ];
-
-    // 🎨 Theme Toggle
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const isDark = document.body.getAttribute('data-theme') === 'dark';
-      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      document.getElementById('themeToggle').innerHTML = 
-        `<i class="fas fa-${isDark ? 'sun' : 'moon'}"></i>`;
-    });
-
-    // 👥 Namen festlegen
-    document.getElementById('newGameBtn').addEventListener('click', () => {
-      document.getElementById('nameModal').style.display = 'flex';
-    });
-    document.getElementById('applyNames').addEventListener('click', () => {
-      const w = document.getElementById('nameWhite').value || 'Anonym';
-      const b = document.getElementById('nameBlack').value || 'Anonym';
-      document.getElementById('playerWhite').textContent = w;
-      document.getElementById('playerBlack').textContent = b;
-      document.getElementById('nameModal').style.display = 'none';
-      startNewGame(w, b);
-    });
-    document.getElementById('cancelNames').addEventListener('click', () => {
-      document.getElementById('nameModal').style.display = 'none';
-    });
-
-    // 📦 Daten
     let games = JSON.parse(localStorage.getItem('chessGames')) || [];
     let currentGameId = null;
     let game = null;
-    let selectedSquare = null;
+    let selected = null;
     let validMoves = [];
     let lastMove = null;
-    let whiteCaptures = [];
-    let blackCaptures = [];
+    let playerNameW = "Anonym";
+    let playerNameB = "Anonym";
 
-    const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-    // 🧩 Schach-Logik (gekürzt für Platz, aber voll funktional)
+    // ========== SCHACH-LOGIK (vollständig, aber kompakt) ==========
     class ChessGame {
       constructor(fen = START_FEN) {
         this.loadFEN(fen);
       }
       loadFEN(fen) {
-        const [boardStr, turn, castling, ep, half, full] = fen.split(' ');
+        const [board, turn, castling, ep, half, full] = fen.split(' ');
         this.board = Array(8).fill().map(() => Array(8).fill(null));
-        const rows = boardStr.split('/');
+        const rows = board.split('/');
         for (let r = 0; r < 8; r++) {
           let c = 0;
           for (let char of rows[r]) {
@@ -482,6 +355,10 @@
         this.fullmove = parseInt(full || '1');
         this.history = [];
       }
+      getPiece(r, c) { return this.board[r]?.[c] || null; }
+      setPiece(r, c, p) { if (r >= 0 && r < 8 && c >= 0 && c < 8) this.board[r][c] = p; }
+      isWhite(p) { return p && p === p.toUpperCase(); }
+      copy() { return JSON.parse(JSON.stringify(this)); }
       toFEN() {
         let s = '';
         for (let r = 0; r < 8; r++) {
@@ -498,11 +375,7 @@
           if (r < 7) s += '/';
         }
         const turn = this.turn === 'white' ? 'w' : 'b';
-        let cast = '';
-        if (this.castling.K) cast += 'K';
-        if (this.castling.Q) cast += 'Q';
-        if (this.castling.k) cast += 'k';
-        if (this.castling.q) cast += 'q';
+        let cast = (this.castling.K ? 'K' : '') + (this.castling.Q ? 'Q' : '') + (this.castling.k ? 'k' : '') + (this.castling.q ? 'q' : '');
         if (!cast) cast = '-';
         const ep = this.enPassant ? String.fromCharCode(97 + this.enPassant.col) + (8 - this.enPassant.row) : '-';
         return `${s} ${turn} ${cast} ${ep} ${this.halfmove} ${this.fullmove}`;
@@ -510,87 +383,84 @@
       getLegalMoves() {
         const moves = [];
         for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-          const p = this.board[r][c];
+          const p = this.getPiece(r, c);
           if (!p) continue;
-          const isWhite = p === p.toUpperCase();
-          if ((this.turn === 'white') !== isWhite) continue;
-          const pieceMoves = this.getPieceMoves({row:r,col:c}, p);
+          if ((this.turn === 'white') !== this.isWhite(p)) continue;
+          const pieceMoves = this.getMovesForPiece(r, c, p);
           for (const m of pieceMoves) {
-            const backup = JSON.parse(JSON.stringify(this));
-            this.makeMove({row:r,col:c}, m.to, 'q', false);
-            const inCheck = this.isKingAttacked(this.findKing(this.turn === 'white' ? 'K' : 'k'), this.turn);
+            const backup = this.copy();
+            this.makeMove({r, c}, m.to, 'q', false);
+            const inCheck = this.isAttacked(this.findKing(this.turn === 'white' ? 'K' : 'k'), this.turn);
             Object.assign(this, backup);
-            if (!inCheck) moves.push(m);
+            if (!inCheck) moves.push({from: {r, c}, to: m.to, ...m});
           }
         }
         return moves;
       }
       findKing(k) {
-        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (this.board[r][c] === k) return {row:r,col:c};
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (this.board[r][c] === k) return {r, c};
         return null;
       }
-      isKingAttacked(pos, color) {
-        const opp = color === 'white' ? 'black' : 'white';
-        const pieces = opp === 'white' ? ['P','R','N','B','Q','K'] : ['p','r','n','b','q','k'];
+      isAttacked(pos, color) {
+        const opp = color === 'white' ? ['p','r','n','b','q','k'] : ['P','R','N','B','Q','K'];
         for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
           const p = this.board[r][c];
-          if (!p || !pieces.includes(p)) continue;
-          const ms = this.getPieceMoves({row:r,col:c}, p, true);
-          if (ms.some(m => m.to.row === pos.row && m.to.col === pos.col)) return true;
+          if (!p || !opp.includes(p)) continue;
+          const ms = this.getMovesForPiece(r, c, p, true);
+          if (ms.some(m => m.to.r === pos.r && m.to.c === pos.c)) return true;
         }
         return false;
       }
-      getPieceMoves(pos, p, skip = false) {
-        const r = pos.row, c = pos.col;
-        const isWhite = p === p.toUpperCase();
-        const char = p.toLowerCase();
+      getMovesForPiece(r, c, p, skipCheck = false) {
         const moves = [];
+        const isW = this.isWhite(p);
+        const char = p.toLowerCase();
         if (char === 'p') {
-          const d = isWhite ? -1 : 1;
-          if (r + d >= 0 && r + d < 8 && this.board[r+d][c] === null) {
-            moves.push({from:pos, to:{row:r+d,col:c}});
-            if ((isWhite && r === 6) || (!isWhite && r === 1)) {
-              if (this.board[r+2*d][c] === null) moves.push({from:pos, to:{row:r+2*d,col:c}});
+          const d = isW ? -1 : 1;
+          if (r + d >= 0 && r + d < 8 && !this.getPiece(r + d, c)) {
+            moves.push({to: {r: r + d, c}});
+            if ((isW && r === 6) || (!isW && r === 1)) {
+              if (!this.getPiece(r + 2 * d, c)) moves.push({to: {r: r + 2 * d, c}});
             }
           }
-          for (const dc of [-1,1]) {
+          for (const dc of [-1, 1]) {
             const nr = r + d, nc = c + dc;
             if (nc < 0 || nc >= 8 || nr < 0 || nr >= 8) continue;
-            const t = this.board[nr][nc];
-            if (t && (t === t.toLowerCase()) === isWhite) moves.push({from:pos, to:{row:nr,col:nc}});
-            if (this.enPassant && this.enPassant.row === nr && this.enPassant.col === nc) {
-              moves.push({from:pos, to:{row:nr,col:nc}, enPassant: true});
+            const t = this.getPiece(nr, nc);
+            if (t && this.isWhite(t) !== isW) moves.push({to: {r: nr, c: nc}});
+            if (this.enPassant && this.enPassant.r === nr && this.enPassant.c === nc) {
+              moves.push({to: {r: nr, c: nc}, enPassant: true});
             }
           }
         } else if (char === 'n') {
           const offsets = [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]];
-          for (const [dr,dc] of offsets) {
+          for (const [dr, dc] of offsets) {
             const nr = r + dr, nc = c + dc;
             if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) continue;
-            const t = this.board[nr][nc];
-            if (t === null || (t === t.toLowerCase()) === isWhite) moves.push({from:pos, to:{row:nr,col:nc}});
+            const t = this.getPiece(nr, nc);
+            if (!t || this.isWhite(t) !== isW) moves.push({to: {r: nr, c: nc}});
           }
         } else if (char === 'k') {
           const offsets = [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,-1],[-1,1]];
-          for (const [dr,dc] of offsets) {
+          for (const [dr, dc] of offsets) {
             const nr = r + dr, nc = c + dc;
             if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) continue;
-            const t = this.board[nr][nc];
-            if (t === null || (t === t.toLowerCase()) === isWhite) moves.push({from:pos, to:{row:nr,col:nc}});
+            const t = this.getPiece(nr, nc);
+            if (!t || this.isWhite(t) !== isW) moves.push({to: {r: nr, c: nc}});
           }
-          if (isWhite && p === 'K') {
-            if (this.castling.K && this.board[7][5] === null && this.board[7][6] === null && this.board[7][7] === 'R') {
-              moves.push({from:pos, to:{row:7,col:6}, castling:'K'});
+          if (isW && p === 'K') {
+            if (this.castling.K && !this.getPiece(7,5) && !this.getPiece(7,6) && this.getPiece(7,7) === 'R') {
+              moves.push({to: {r:7, c:6}, castling: 'K'});
             }
-            if (this.castling.Q && this.board[7][1] === null && this.board[7][2] === null && this.board[7][3] === null && this.board[7][0] === 'R') {
-              moves.push({from:pos, to:{row:7,col:2}, castling:'Q'});
+            if (this.castling.Q && !this.getPiece(7,1) && !this.getPiece(7,2) && !this.getPiece(7,3) && this.getPiece(7,0) === 'R') {
+              moves.push({to: {r:7, c:2}, castling: 'Q'});
             }
-          } else if (!isWhite && p === 'k') {
-            if (this.castling.k && this.board[0][5] === null && this.board[0][6] === null && this.board[0][7] === 'r') {
-              moves.push({from:pos, to:{row:0,col:6}, castling:'k'});
+          } else if (!isW && p === 'k') {
+            if (this.castling.k && !this.getPiece(0,5) && !this.getPiece(0,6) && this.getPiece(0,7) === 'r') {
+              moves.push({to: {r:0, c:6}, castling: 'k'});
             }
-            if (this.castling.q && this.board[0][1] === null && this.board[0][2] === null && this.board[0][3] === null && this.board[0][0] === 'r') {
-              moves.push({from:pos, to:{row:0,col:2}, castling:'q'});
+            if (this.castling.q && !this.getPiece(0,1) && !this.getPiece(0,2) && !this.getPiece(0,3) && this.getPiece(0,0) === 'r') {
+              moves.push({to: {r:0, c:2}, castling: 'q'});
             }
           }
         } else {
@@ -599,14 +469,14 @@
             'b': [[1,1],[1,-1],[-1,-1],[-1,1]],
             'q': [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,-1],[-1,1]]
           }[char];
-          for (const [dr,dc] of dirs) {
+          for (const [dr, dc] of dirs) {
             for (let i = 1; i <= 7; i++) {
-              const nr = r + i*dr, nc = c + i*dc;
+              const nr = r + i * dr, nc = c + i * dc;
               if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
-              const t = this.board[nr][nc];
-              if (t === null) moves.push({from:pos, to:{row:nr,col:nc}});
+              const t = this.getPiece(nr, nc);
+              if (!t) moves.push({to: {r: nr, c: nc}});
               else {
-                if ((t === t.toLowerCase()) === isWhite) moves.push({from:pos, to:{row:nr,col:nc}});
+                if (this.isWhite(t) !== isW) moves.push({to: {r: nr, c: nc}});
                 break;
               }
             }
@@ -614,259 +484,319 @@
         }
         return moves;
       }
-      makeMove(from, to, promo = 'q', record = true) {
-        if (record) this.history.push({fen: this.toFEN(), from, to});
-        const piece = this.board[from.row][from.col];
-        const target = this.board[to.row][to.col];
-        if (target) {
-          if (this.turn === 'white') blackCaptures.push(target);
-          else whiteCaptures.push(target);
-        }
+      makeMove(from, to, promo = 'q', save = true) {
+        if (save) this.history.push({fen: this.toFEN(), from, to});
+        const piece = this.getPiece(from.r, from.c);
+        const target = this.getPiece(to.r, to.c);
         if (to.castling) {
-          if (to.castling === 'K') { this.board[7][4]=null; this.board[7][6]='K'; this.board[7][7]=null; this.board[7][5]='R'; }
-          else if (to.castling === 'Q') { this.board[7][4]=null; this.board[7][2]='K'; this.board[7][0]=null; this.board[7][3]='R'; }
-          else if (to.castling === 'k') { this.board[0][4]=null; this.board[0][6]='k'; this.board[0][7]=null; this.board[0][5]='r'; }
-          else if (to.castling === 'q') { this.board[0][4]=null; this.board[0][2]='k'; this.board[0][0]=null; this.board[0][3]='r'; }
-          this.board[from.row][from.col] = null;
+          if (to.castling === 'K') { this.setPiece(7,4,null); this.setPiece(7,6,'K'); this.setPiece(7,7,null); this.setPiece(7,5,'R'); }
+          else if (to.castling === 'Q') { this.setPiece(7,4,null); this.setPiece(7,2,'K'); this.setPiece(7,0,null); this.setPiece(7,3,'R'); }
+          else if (to.castling === 'k') { this.setPiece(0,4,null); this.setPiece(0,6,'k'); this.setPiece(0,7,null); this.setPiece(0,5,'r'); }
+          else if (to.castling === 'q') { this.setPiece(0,4,null); this.setPiece(0,2,'k'); this.setPiece(0,0,null); this.setPiece(0,3,'r'); }
+          this.setPiece(from.r, from.c, null);
         } else if (to.enPassant) {
-          this.board[from.row][from.col] = null;
-          this.board[to.row][to.col] = piece;
-          this.board[from.row][to.col] = null;
+          this.setPiece(from.r, from.c, null);
+          this.setPiece(to.r, to.c, piece);
+          this.setPiece(from.r, to.c, null);
         } else {
-          this.board[from.row][from.col] = null;
-          this.board[to.row][to.col] = piece;
-          if (piece.toLowerCase() === 'p' && (to.row === 0 || to.row === 7)) {
-            const p = isWhite(piece) ? promo.toUpperCase() : promo.toLowerCase();
-            this.board[to.row][to.col] = p;
+          this.setPiece(from.r, from.c, null);
+          this.setPiece(to.r, to.c, piece);
+          if (piece.toLowerCase() === 'p' && (to.r === 0 || to.r === 7)) {
+            const p = this.isWhite(piece) ? promo.toUpperCase() : promo.toLowerCase();
+            this.setPiece(to.r, to.c, p);
           }
         }
         if (piece === 'K') { this.castling.K = false; this.castling.Q = false; }
         if (piece === 'k') { this.castling.k = false; this.castling.q = false; }
-        if (piece === 'R' && from.row === 7 && from.col === 7) this.castling.K = false;
-        if (piece === 'R' && from.row === 7 && from.col === 0) this.castling.Q = false;
-        if (piece === 'r' && from.row === 0 && from.col === 7) this.castling.k = false;
-        if (piece === 'r' && from.row === 0 && from.col === 0) this.castling.q = false;
+        if (piece === 'R' && from.r === 7 && from.c === 7) this.castling.K = false;
+        if (piece === 'R' && from.r === 7 && from.c === 0) this.castling.Q = false;
+        if (piece === 'r' && from.r === 0 && from.c === 7) this.castling.k = false;
+        if (piece === 'r' && from.r === 0 && from.c === 0) this.castling.q = false;
         this.enPassant = null;
-        if (piece.toLowerCase() === 'p' && Math.abs(from.row - to.row) === 2) {
-          this.enPassant = { row: (from.row + to.row)/2, col: from.col };
+        if (piece.toLowerCase() === 'p' && Math.abs(from.r - to.r) === 2) {
+          this.enPassant = { r: (from.r + to.r) / 2, c: from.c };
         }
         if (piece.toLowerCase() === 'p' || target) this.halfmove = 0;
         else this.halfmove++;
         if (this.turn === 'black') this.fullmove++;
         this.turn = this.turn === 'white' ? 'black' : 'white';
-        lastMove = {from, to};
+        lastMove = { from, to };
         renderBoard();
-        updateCaptures();
-        updateAnalysis();
-        speakAfterMove();
+        updateMaterial();
+        speak();
       }
       undoMove() {
         if (this.history.length === 0) return false;
         const last = this.history.pop();
         this.loadFEN(last.fen);
-        // Rückgängig bei Beute
-        if (whiteCaptures.length > 0) whiteCaptures.pop();
-        if (blackCaptures.length > 0) blackCaptures.pop();
         return true;
       }
-      evaluate() {
-        const vals = {p:1, n:3, b:3, r:5, q:9};
-        let score = 0;
-        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-          const p = this.board[r][c];
-          if (!p) continue;
-          const v = vals[p.toLowerCase()] || 0;
-          score += (p === p.toUpperCase() ? 1 : -1) * v;
-        }
-        return score;
-      }
     }
 
-    function isWhite(p) { return p && p === p.toUpperCase(); }
-
-    function startNewGame(w, b) {
-      whiteCaptures = [];
-      blackCaptures = [];
-      game = new ChessGame();
-      selectedSquare = null;
-      validMoves = [];
-      lastMove = null;
-      currentGameId = Date.now();
-      games.push({
-        id: currentGameId,
-        title: `${w} vs ${b}`,
-        fen: START_FEN,
-        created: new Date().toISOString()
-      });
-      renderBoard();
-      updateCaptures();
-      updateAnalysis();
-      document.getElementById('status').textContent = `${w} ist am Zug.`;
-      document.getElementById('moveCount').textContent = `Zug 1`;
-      document.getElementById('speechBubble').textContent = "Los geht’s! Zeig, was in dir steckt.";
-    }
-
+    // ========== HILFSFUNKTIONEN ==========
     function renderBoard() {
       const board = document.getElementById('board');
       board.innerHTML = '';
-      const pieceMap = {
-        'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
-        'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
-      };
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
           const sq = document.createElement('div');
           sq.className = `square ${(r + c) % 2 === 0 ? 'white' : 'black'}`;
-          sq.dataset.r = r; sq.dataset.c = c;
+          const piece = game.getPiece(r, c);
+          if (piece) sq.textContent = PIECES[piece] || '';
           if (lastMove && (
-            (lastMove.from.row === r && lastMove.from.col === c) ||
-            (lastMove.to.row === r && lastMove.to.col === c)
+            (lastMove.from?.r === r && lastMove.from?.c === c) ||
+            (lastMove.to?.r === r && lastMove.to?.c === c)
           )) sq.classList.add('last-move');
-          const piece = game.board[r][c];
-          if (piece) {
-            const pieceEl = document.createElement('div');
-            pieceEl.className = 'piece';
-            pieceEl.innerHTML = pieceMap[piece] || '';
-            sq.appendChild(pieceEl);
-          }
-          if (selectedSquare && selectedSquare.row === r && selectedSquare.col === c) {
-            sq.classList.add('selected');
-          }
-          sq.addEventListener('click', () => handleSquareClick(r, c));
+          if (selected && selected.r === r && selected.c === c) sq.classList.add('selected');
+          sq.onclick = () => handleSquareClick(r, c);
           board.appendChild(sq);
         }
       }
       validMoves.forEach(m => {
-        const s = document.querySelector(`.square[data-r="${m.to.row}"][data-c="${m.to.col}"]`);
+        const s = document.querySelector(`.square:nth-child(${m.to.r * 8 + m.to.c + 1})`);
         if (s) {
-          const t = game.board[m.to.row][m.to.col];
+          const t = game.getPiece(m.to.r, m.to.c);
           s.classList.add(t ? 'valid-capture' : 'valid-move');
         }
       });
+      document.getElementById('status').textContent = `${game.turn === 'white' ? playerNameW : playerNameB} ist am Zug.`;
     }
 
     function handleSquareClick(r, c) {
-      const piece = game.board[r][c];
-      if (selectedSquare) {
-        const move = validMoves.find(m => m.to.row === r && m.to.col === c);
+      const piece = game.getPiece(r, c);
+      const isOwn = piece && (game.turn === 'white') === game.isWhite(piece);
+      
+      if (selected) {
+        const move = validMoves.find(m => m.to.r === r && m.to.c === c);
         if (move) {
           if (piece && piece.toLowerCase() === 'p' && (r === 0 || r === 7)) {
             showPromotion(r, c);
             return;
           }
-          game.makeMove(selectedSquare, {row:r, col:c});
-          selectedSquare = null;
+          game.makeMove(selected, {r, c});
+          selected = null;
           validMoves = [];
           return;
         }
-        if (piece && ((game.turn === 'white') === isWhite(piece))) {
-          selectedSquare = {row:r, col:c};
-          validMoves = game.getLegalMoves().filter(m => m.from.row === r && m.from.col === c);
+        if (isOwn) {
+          selected = {r, c};
+          validMoves = game.getLegalMoves().filter(m => m.from.r === r && m.from.c === c);
           renderBoard();
           return;
         }
-        selectedSquare = null;
-        validMoves = [];
-        renderBoard();
-        return;
       }
-      if (piece && ((game.turn === 'white') === isWhite(piece))) {
-        selectedSquare = {row:r, col:c};
-        validMoves = game.getLegalMoves().filter(m => m.from.row === r && m.from.col === c);
+      if (isOwn) {
+        selected = {r, c};
+        validMoves = game.getLegalMoves().filter(m => m.from.r === r && m.from.c === c);
+        renderBoard();
+      } else {
+        selected = null;
+        validMoves = [];
         renderBoard();
       }
     }
 
     function showPromotion(r, c) {
       const div = document.createElement('div');
-      div.style.cssText = `
-        position: fixed; top:0; left:0; width:100%; height:100%; 
-        background: rgba(0,0,0,0.7); z-index: 2000; 
-        display: flex; align-items: center; justify-content: center;
-      `;
+      div.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:center; justify-content:center;`;
       div.innerHTML = `
-        <div style="background:var(--card); padding:1.5rem; border-radius:12px; text-align:center;">
+        <div style="background:white; padding:1.5rem; border-radius:12px; text-align:center;">
           <h3>Bauernumwandlung</h3>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin:1rem 0;">
-            <button data-p="q" style="padding:0.6rem; font-size:1.5rem;">♕ Dame</button>
-            <button data-p="r" style="padding:0.6rem; font-size:1.5rem;">♖ Turm</button>
-            <button data-p="b" style="padding:0.6rem; font-size:1.5rem;">♗ Läufer</button>
-            <button data-p="n" style="padding:0.6rem; font-size:1.5rem;">♘ Springer</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin:1rem 0;">
+            <button data-p="q" style="padding:0.6rem; font-size:1.8rem;">♕ Dame</button>
+            <button data-p="r" style="padding:0.6rem; font-size:1.8rem;">♖ Turm</button>
+            <button data-p="b" style="padding:0.6rem; font-size:1.8rem;">♗ Läufer</button>
+            <button data-p="n" style="padding:0.6rem; font-size:1.8rem;">♘ Springer</button>
           </div>
         </div>
       `;
       document.body.appendChild(div);
       div.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          game.makeMove(selectedSquare, {row:r, col:c}, btn.dataset.p);
-          selectedSquare = null;
+        btn.onclick = () => {
+          game.makeMove(selected, {r, c}, btn.dataset.p);
+          selected = null;
           validMoves = [];
           document.body.removeChild(div);
-        });
+        };
       });
     }
 
-    function updateCaptures() {
-      const wDiv = document.getElementById('whiteCaptures');
-      const bDiv = document.getElementById('blackCaptures');
-      wDiv.innerHTML = whiteCaptures.map(p => `<div class="captured-piece">${p}</div>`).join('');
-      bDiv.innerHTML = blackCaptures.map(p => `<div class="captured-piece">${p}</div>`).join('');
+    function updateMaterial() {
+      const allPieces = ['K','Q','R','R','B','B','N','N','P','P','P','P','P','P','P','P'];
+      const whiteOnBoard = [], blackOnBoard = [];
       
-      const vals = {p:1, n:3, b:3, r:5, q:9};
-      let wMat = whiteCaptures.reduce((s, p) => s + (vals[p.toLowerCase()] || 0), 0);
-      let bMat = blackCaptures.reduce((s, p) => s + (vals[p.toLowerCase()] || 0), 0);
-      const diff = wMat - bMat;
-      const el = document.getElementById('materialBalance');
-      el.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}`;
-      el.className = 'material-balance ' + (diff > 0 ? 'positive' : diff < 0 ? 'negative' : '');
-    }
-
-    function updateAnalysis() {
-      const score = game.evaluate();
-      const width = Math.max(0, Math.min(100, 50 + (score / 20) * 100));
-      document.getElementById('evalIndicator').style.width = `${width}%`;
-      
-      let evalText = "Ausgeglichen";
-      if (score > 1.5) evalText = "Weiß steht deutlich besser";
-      else if (score > 0.5) evalText = "Leichter Vorteil für Weiß";
-      else if (score < -1.5) evalText = "Schwarz steht deutlich besser";
-      else if (score < -0.5) evalText = "Leichter Vorteil für Schwarz";
-      document.getElementById('evaluation').textContent = evalText;
-
-      const idx = Math.floor(Math.random() * SUGGESTIONS.length);
-      document.getElementById('suggestion').textContent = SUGGESTIONS[idx];
-    }
-
-    function speakAfterMove() {
-      if (!document.getElementById('toggleComments').checked) return;
-      const phase = game.fullmove < 10 ? 'opening' : game.fullmove < 30 ? 'middlegame' : 'endgame';
-      const pool = COMMENTS[phase].concat(COMMENTS.afterMove);
-      const quote = pool[Math.floor(Math.random() * pool.length)];
-      document.getElementById('speechBubble').textContent = quote;
-    }
-
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      if (currentGameId === null) return;
-      const g = games.find(g => g.id === currentGameId);
-      if (g) {
-        g.fen = game.toFEN();
-        g.lastModified = new Date().toISOString();
-        localStorage.setItem('chessGames', JSON.stringify(games));
-        alert('Spiel gespeichert!');
+      for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+        const p = game.getPiece(r, c);
+        if (p) {
+          if (game.isWhite(p)) whiteOnBoard.push(p);
+          else blackOnBoard.push(p);
+        }
       }
-    });
 
-    document.getElementById('undoBtn')?.addEventListener('click', () => {
+      function diff(expected, actual) {
+        const missing = [];
+        const has = [];
+        const expCount = {};
+        expected.forEach(p => expCount[p] = (expCount[p] || 0) + 1);
+        actual.forEach(p => {
+          if (expCount[p]) expCount[p]--;
+          else has.push(p); // zusätzliche (z. B. umgewandelt)
+        });
+        for (const p in expCount) for (let i = 0; i < expCount[p]; i++) missing.push(p);
+        return { missing, has };
+      }
+
+      const wDiff = diff(allPieces, whiteOnBoard);
+      const bDiff = diff(allPieces.map(p => p.toLowerCase()), blackOnBoard);
+
+      document.getElementById('whiteHas').innerHTML = wDiff.has.map(p => `<span class="material-piece">${PIECES[p]}</span>`).join('');
+      document.getElementById('whiteMissing').innerHTML = wDiff.missing.map(p => `<span class="material-piece material-missing">${PIECES[p]}</span>`).join('');
+      document.getElementById('blackHas').innerHTML = bDiff.has.map(p => `<span class="material-piece">${PIECES[p]}</span>`).join('');
+      document.getElementById('blackMissing').innerHTML = bDiff.missing.map(p => `<span class="material-piece material-missing">${PIECES[p]}</span>`).join('');
+
+      let whiteScore = whiteOnBoard.reduce((s, p) => s + VALUES[p.toLowerCase()], 0);
+      let blackScore = blackOnBoard.reduce((s, p) => s + VALUES[p.toLowerCase()], 0);
+      const diff = whiteScore - blackScore;
+      const bal = document.getElementById('balance');
+      bal.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}`;
+      bal.className = 'balance ' + (diff > 0 ? 'pos' : diff < 0 ? 'neg' : '');
+    }
+
+    function speak() {
+      if (!document.getElementById('toggleComments').checked) return;
+      const quotes = [
+        `Ah, ${playerNameW} wagt einen scharfen Zug!`,
+        `${playerNameB} antwortet – aber ist es klug?`,
+        `Interessant… ${game.turn === 'white' ? playerNameW : playerNameB} zögert.`,
+        `Zentrumskontrolle – guter Instinkt!`,
+        `Achtung: Ungedeckte Figur!`,
+        `Rochade – endlich Sicherheit für den König.`,
+        `Bauernduell am Damenflügel… spannend!`,
+        `Wer wird die offene Linie nutzen?`
+      ];
+      document.getElementById('speechBubble').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function saveGame(title = "Unbenannt") {
+      const id = currentGameId || Date.now();
+      const existing = games.find(g => g.id === id);
+      if (existing) {
+        existing.fen = game.toFEN();
+        existing.title = title;
+        existing.last = new Date().toISOString();
+      } else {
+        games.push({ id, title, fen: game.toFEN(), created: new Date().toISOString(), last: new Date().toISOString() });
+      }
+      currentGameId = id;
+      localStorage.setItem('chessGames', JSON.stringify(games));
+      renderGameList();
+    }
+
+    function renderGameList() {
+      const list = document.getElementById('gameList');
+      if (games.length === 0) {
+        list.innerHTML = '<div class="game-item">Keine Spiele gespeichert.</div>';
+        return;
+      }
+      list.innerHTML = games.map(g => `
+        <div class="game-item">
+          <span>${g.title}</span>
+          <div>
+            <button onclick="loadGame(${g.id})">▶️</button>
+            <button onclick="deleteGame(${g.id})">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadGame(id) {
+      const g = games.find(g => g.id === id);
+      if (!g) return;
+      game = new ChessGame(g.fen);
+      currentGameId = id;
+      selected = null;
+      validMoves = [];
+      lastMove = null;
+      renderBoard();
+      updateMaterial();
+    }
+
+    function deleteGame(id) {
+      if (confirm('Spiel wirklich löschen?')) {
+        games = games.filter(g => g.id !== id);
+        localStorage.setItem('chessGames', JSON.stringify(games));
+        renderGameList();
+      }
+    }
+
+    // ========== EVENTS ==========
+    document.getElementById('newGameBtn').onclick = () => {
+      game = new ChessGame();
+      currentGameId = null;
+      selected = null;
+      validMoves = [];
+      lastMove = null;
+      renderBoard();
+      updateMaterial();
+    };
+
+    document.getElementById('loadFENBtn').onclick = () => {
+      document.getElementById('fenModal').style.display = 'flex';
+    };
+    document.getElementById('applyFEN').onclick = () => {
+      const fen = document.getElementById('fenInput').value.trim();
+      if (fen) {
+        game = new ChessGame(fen);
+        currentGameId = null;
+        selected = null;
+        validMoves = [];
+        lastMove = null;
+        renderBoard();
+        updateMaterial();
+      }
+      document.getElementById('fenModal').style.display = 'none';
+    };
+    document.getElementById('cancelFEN').onclick = () => {
+      document.getElementById('fenModal').style.display = 'none';
+    };
+
+    document.getElementById('setNamesBtn').onclick = () => {
+      document.getElementById('nameW').value = playerNameW;
+      document.getElementById('nameB').value = playerNameB;
+      document.getElementById('nameModal').style.display = 'flex';
+    };
+    document.getElementById('applyNames').onclick = () => {
+      playerNameW = document.getElementById('nameW').value || 'Anonym';
+      playerNameB = document.getElementById('nameB').value || 'Anonym';
+      document.getElementById('playerWhite').textContent = playerNameW;
+      document.getElementById('playerBlack').textContent = playerNameB;
+      document.getElementById('nameModal').style.display = 'none';
+      speak();
+    };
+    document.getElementById('cancelNames').onclick = () => {
+      document.getElementById('nameModal').style.display = 'none';
+    };
+
+    document.getElementById('undoBtn').onclick = () => {
       if (game.undoMove()) {
         renderBoard();
-        updateCaptures();
-        updateAnalysis();
+        updateMaterial();
       }
-    });
+    };
 
-    // Init
-    document.getElementById('playerWhite').textContent = 'Anonym';
-    document.getElementById('playerBlack').textContent = 'Anonym';
+    document.getElementById('toggleTheme').onclick = () => {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    };
+
+    window.loadGame = loadGame;
+    window.deleteGame = deleteGame;
+
+    // ========== INIT ==========
+    game = new ChessGame();
+    renderGameList();
+    renderBoard();
+    updateMaterial();
   </script>
 </body>
 </html>
